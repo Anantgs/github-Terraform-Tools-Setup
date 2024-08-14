@@ -15,16 +15,17 @@ output "instance_subnet_map" {
   value       = local.instance_subnet_map
 }
 
-module "ec2_public" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
 
+module "ec2_public" {
+  depends_on = [ module.vpc ]
+  source  = "terraform-aws-modules/ec2-instance/aws"
   for_each = { for item in local.instance_subnet_map : "${item.name}-${item.subnet_id}" => item }
 
   name = "${each.value.label}-Instance"
 
   instance_type               = var.instance_type
   ami                         = data.aws_ami.amzlinux2.id
-  key_name                    = "virginia"
+  key_name                    = var.instance_keypair
   monitoring                  = false
   vpc_security_group_ids      = [module.public_bastion_sg.security_group_id,module.private_sg.security_group_id]
   # iam_instance_profile        = aws_iam_instance_profile.ssm_profile.name
