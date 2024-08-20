@@ -1,3 +1,12 @@
+variable "instance_ports" {
+  type = map(number)
+  default = {
+    "Elasticsearch"  = 80
+    "kibana"         = 8081
+    # Add other instances and ports as needed
+  }
+}
+
 resource "aws_lb" "test" {
 
   for_each = { for label in var.instance_names : label => label }  
@@ -21,7 +30,7 @@ resource "aws_lb_target_group" "test" {
   for_each                          = { for label in var.instance_names : label => label }
   name                              = "${each.value}-alb"
   # create_attachment                 = false
-  port                              = 80
+  port                              = lookup(var.instance_ports, each.value, 80)
   target_type                       = "instance"
   deregistration_delay              = 10
   load_balancing_cross_zone_enabled = false

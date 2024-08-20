@@ -1,8 +1,18 @@
+variable "listener_ports" {
+  type = map(number)
+  default = {
+    "elasticsearch" = 80
+    "kibana"         = 8081
+    # Add other instances and their listener ports as needed
+  }
+}
+
+
 # Listener
 resource "aws_lb_listener" "app_listener" {
   for_each          = aws_lb.test
   load_balancer_arn = each.value.arn
-  port              = "80"
+  port              = lookup(var.listener_ports, each.key, 80) 
   protocol          = "HTTP"
 
   default_action {
@@ -69,6 +79,6 @@ resource "aws_lb_target_group_attachment" "app_tg_attachment" {
 
   target_group_arn = aws_lb_target_group.test[each.value.purpose].arn
   target_id        = each.value.instance_id
-  port             = 80
+  port             = lookup(var.instance_ports, each.value.purpose, 80)
 }
 

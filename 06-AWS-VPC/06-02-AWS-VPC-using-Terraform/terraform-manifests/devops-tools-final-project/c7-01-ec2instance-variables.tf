@@ -16,7 +16,7 @@ variable "instance_names" {
   description = "Map of instance names"
   default = {
     one   = "Elasticsearch"
-    # two   = "kibana"
+    two   = "kibana"
     # three = "logstash"
     # four  = "filebeat"    
     // five  = "logstash-server"   
