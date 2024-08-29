@@ -1,0 +1,43 @@
+
+Outputs:
+
+filtered_instance_ids = tolist([
+  "i-024524821d1086e76",
+  "i-0cdcdd775a8fd6a3c",
+  "i-02e9d6635be311c0a",
+  "i-01195da26517b7d4e",
+])
+grouped_instances = {
+  "Elasticsearch" = {
+    "instances" = [
+      {
+        "id" = "i-02e9d6635be311c0a"
+        "purpose" = "Elasticsearch"
+        "subnet_id" = "subnet-05bdd694458c708af"
+      },
+      {
+        "id" = "i-0cdcdd775a8fd6a3c"
+        "purpose" = "Elasticsearch"
+        "subnet_id" = "subnet-07bdc59d5631cbf8f"
+      },
+    ]
+  }
+  "kibana" = {
+    "instances" = [
+      {
+        "id" = "i-01195da26517b7d4e"
+        "purpose" = "kibana"
+        "subnet_id" = "subnet-05bdd694458c708af"
+      },
+      {
+        "id" = "i-024524821d1086e76"
+        "purpose" = "kibana"
+        "subnet_id" = "subnet-07bdc59d5631cbf8f"
+      },
+    ]
+  }
+}
+instance_purposes = [
+  "Elasticsearch",
+  "kibana",
+]
