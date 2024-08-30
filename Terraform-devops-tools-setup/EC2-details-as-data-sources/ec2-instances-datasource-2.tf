@@ -68,7 +68,7 @@ locals {
 }
 
 # Data source to fetch VPCs with purpose = loadbalancer
-data "aws_vpcs" "loadbalancer_vpcs" {
+data "aws_vpc" "loadbalancer_vpcs" {
   filter {
     name   = "tag:purpose"
     values = [local.loadbalancer_purpose]
@@ -100,7 +100,7 @@ data "aws_subnets" "loadbalancer_subnets" {
 # Output the IDs of the VPCs retrieved
 output "loadbalancer_vpc_ids" {
   description = "IDs of VPCs with purpose=loadbalancer"
-  value       = data.aws_vpcs.loadbalancer_vpcs.ids
+  value       = data.aws_vpc.loadbalancer_vpcs.id
 }
 
 # Output the IDs of the security groups retrieved
@@ -141,7 +141,7 @@ variable "instance_ports" {
 resource "aws_lb" "test" {
 
   for_each                   = { for label in var.instance_names : label => label }  
-  name                       = "${each.value}-alb"
+  name                       = "${each.value}-alb1"
   internal                   = false
   load_balancer_type         = "application"
   # security_groups            = [module.loadbalancer_sg.security_group_id]
@@ -160,7 +160,7 @@ resource "aws_lb" "test" {
 resource "aws_lb_target_group" "test" {
 
   for_each                          = { for label in var.instance_names : label => label }
-  name                              = "${each.value}-alb"
+  name                              = "${each.value}-alb1"
   # create_attachment                 = false
   port                              = lookup(var.instance_ports, each.value, 80)
   target_type                       = "instance"
@@ -169,7 +169,7 @@ resource "aws_lb_target_group" "test" {
   protocol_version                  = "HTTP1"  
   protocol                          = "HTTP"
   # vpc_id                            = module.vpc.vpc_id
-  vpc_id                            = data.aws_vpcs.loadbalancer_vpcs.id
+  vpc_id                            = data.aws_vpc.loadbalancer_vpcs.id
   health_check {
     path                = "/"
     interval            = 30
@@ -181,7 +181,42 @@ resource "aws_lb_target_group" "test" {
 
 }
 
+/* ---------------------------------------------------------------------------------- */
 
+variable "listener_ports" {
+  type = map(number)
+  default = {
+    "elasticsearch"  = 80
+    "kibana"         = 8081
+    # Add other instances and their listener ports as needed
+  }
+}
 
+# Listener
+resource "aws_lb_listener" "app_listener" {
+  for_each          = aws_lb.test
+  load_balancer_arn = each.value.arn
+  port              = lookup(var.listener_ports, each.key, 80) 
+  protocol          = "HTTP"
 
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.test[each.key].arn
+  }
+}
 
+resource "aws_lb_target_group_attachment" "app_tg_attachment" {
+  # Loop through the instance details, grouping them by their purpose
+  for_each = {
+    for inst in local.instance_details : 
+    "${inst.purpose}-${inst.id}" => {
+      instance_id = inst.id
+      purpose     = inst.purpose
+    }
+  }
+
+  # Attach instances to the corresponding target group
+  target_group_arn = aws_lb_target_group.test[each.value.purpose].arn
+  target_id        = each.value.instance_id
+  port             = lookup(var.instance_ports, each.value.purpose, 80)
+}
