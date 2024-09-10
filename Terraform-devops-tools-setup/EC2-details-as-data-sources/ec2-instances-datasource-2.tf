@@ -71,7 +71,7 @@ locals {
 data "aws_vpc" "loadbalancer_vpcs" {
   filter {
     name   = "tag:purpose"
-    values = [local.loadbalancer_purpose]
+    values = ["loadbalancer"]
   }
 }
 
@@ -147,7 +147,7 @@ resource "aws_lb" "test" {
   # security_groups            = [module.loadbalancer_sg.security_group_id]
   security_groups            = data.aws_security_groups.loadbalancer_sg.ids 
   subnets                    = data.aws_subnets.loadbalancer_subnets.ids
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   tags = {
     Terraform   = "true"

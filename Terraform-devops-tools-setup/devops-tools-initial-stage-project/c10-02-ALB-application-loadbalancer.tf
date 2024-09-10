@@ -15,7 +15,7 @@ resource "aws_lb" "test" {
   load_balancer_type         = "application"
   security_groups            = [module.loadbalancer_sg.security_group_id]
   subnets                    = module.vpc.public_subnets
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   tags = {
     Terraform   = "true"
