@@ -17,7 +17,10 @@ variable "instance_names" {
   default = {
     one   = "Elasticsearch"
     two   = "kibana"
-    # three = "logstash"
+    three = "sonarqube"
+    four  = "trivy"
+    five  = "vault"
+    # three = "logstash"vi
     # four  = "filebeat"    
     # five  = "logstash-server"   
     # two   = "Vault"

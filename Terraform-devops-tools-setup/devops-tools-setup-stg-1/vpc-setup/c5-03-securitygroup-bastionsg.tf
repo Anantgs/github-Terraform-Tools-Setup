@@ -12,7 +12,7 @@ module "public_bastion_sg" {
   ingress_cidr_blocks = ["0.0.0.0/0"]
   # Egress Rule - all-all open
   egress_rules = ["all-all"]
-  tags = local.common_tags  
+  tags = local.vpc_tags 
 }
 
 # AWS EC2 Security Group Terraform Module
@@ -27,5 +27,5 @@ module "private_sg" {
   ingress_rules       = ["ssh-tcp", "http-80-tcp"]
   ingress_cidr_blocks = ["0.0.0.0/0"]
   egress_rules        = ["all-all"]
-  tags                = local.common_tags  
+  tags                = local.vpc_tags
 }

@@ -134,6 +134,9 @@ variable "instance_ports" {
   default = {
     "Elasticsearch"  = 80
     "kibana"         = 8081
+    "sonarqube"      = 8080
+    "trivy"          = 8091
+    "vault"          = 8000    
     # Add other instances and ports as needed
   }
 }
@@ -188,6 +191,9 @@ variable "listener_ports" {
   default = {
     "elasticsearch"  = 80
     "kibana"         = 8081
+    "sonarqube"      = 8080
+    "trivy"          = 8091
+    "vault"          = 8000     
     # Add other instances and their listener ports as needed
   }
 }

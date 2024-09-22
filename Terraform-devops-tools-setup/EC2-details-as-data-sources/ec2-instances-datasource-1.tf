@@ -4,6 +4,9 @@ variable "instance_names" {
   default = {
     one = "Elasticsearch"
     two = "kibana"
+    three = "sonarqube"
+    four  = "trivy"
+    five  = "vault"    
   }
 }
 
